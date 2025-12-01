@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: blog_api
+    env: node
+    rootDir: .
+    buildCommand: "npm install"
+    startCommand: "node index.js"
