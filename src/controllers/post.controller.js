@@ -1,59 +1,90 @@
-import { PostModel } from "../models/post.model";
-import logger from '../config/logger.js';
+import Post from '../models/post.model.js';
 
-//GET - Obtener todos los posts con la información del autor
+// 1. GET /api/posts
 export const getPosts = async (req, res) => {
     try {
-        const posts = await PostModel.getAllWhithAutor();
-        res.status(200).json(posts);
+        const posts = await Post.getAll();
+        res.json(posts);
     } catch (error) {
-        logger.error('Error al obtener los posts: ', error);
-        res.status(500).json({ message: 'Error interno al obtener los posts' });
+        console.error('Error al obtener posts:', error);
+        res.status(500).json({ error: 'Error al obtener los posts.' });
     }
 };
 
-//GET - Obtener posts por ID de autor con la información del autor
-export const getPostsByAutor = async (req, res) => {
-    const autorId = req.params.autorId;
-
-    if (isNaN(parseInt(autorId))) {
-        return res.status(400).json({ message: 'ID de autor no válido.' });
-    }
+// 2. GET /api/posts/:postId
+export const getPostById = async (req, res) => {
     try {
-        const posts = await PostModel.getByAutorId(autorId);
-
-        if (posts.length === 0) {
-            return res.status(404).json({ message: 'No se encontraron posts para el autor especificado.' });
+        const post = await Post.getById(req.params.postId);
+        if (post) {
+            res.json(post);
+        } else {
+            res.status(404).json({ error: 'Post no encontrado.' });
         }
-        res.status(200).json(posts);
     } catch (error) {
-        logger.error(`Error al obtener los posts para el autor ID ${autorId}: `, error);
-        res.status(500).json({ message: 'Error interno al obtener los posts del autor' });
+        console.error('Error al obtener post por ID:', error);
+        res.status(500).json({ error: 'Error interno del servidor.' });
     }
 };
 
-    //POST - Crear un nuevo post
-export const createPost = async (req, res) => {
-    const { titulo, descripcion, categoria, fk_autor } = req.body;
-
-    if (!titulo || !fk_autor) {
-        return res.status(400).json({ message: 'Faltan campos obligatorios para crear el post.' });
-    }
+// 3. POST /api/posts
+export const postPost = async (req, res) => {
     try {
-        const id_post = await PostModel.create({ titulo, descripcion, categoria, fk_autor });
+        const { titulo, descripcion, fecha_creacion, categoria, fk_autor } = req.body;
+        if (!titulo || !descripcion || !fecha_creacion || !categoria || !fk_autor) {
+            return res.status(400).json({ error: 'Faltan campos obligatorios para el post.' });
+        }
+        const nuevoPost = await Post.create(req.body);
+        res.status(201).json(nuevoPost);
+    } catch (error) {
+        // *** CAMBIO TEMPORAL PARA DEPURACIÓN ***
+        // Esto mostrará el error exacto de MySQL
+        console.error('Error detallado de MySQL:', error); 
         
-        res.status(201).json({ 
-            message: 'Post creado con éxito', 
-            id_post 
+        res.status(500).json({ 
+            error: 'Error al crear el post.',
+            mysql_error_detail: error.sqlMessage || error.message // <-- Esto mostrará la razón real
         });
-    } catch (error) {
-        logger.error('Error al crear post:', error.message);
-        
-        // Manejo de error específico si el autor no existe (Error de Foreign Key)
-        if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-            return res.status(400).json({ message: 'El ID de autor proporcionado no existe.' });
+    }
+};
+
+// 4. PUT /api/posts/:postId
+export const putPost = async (req, res) => {
+    try {
+        const postActualizado = await Post.update(req.params.postId, req.body);
+        if (postActualizado) {
+            res.json(postActualizado);
+        } else {
+            res.status(404).json({ error: 'Post no encontrado para actualizar.' });
         }
-        
-        res.status(500).json({ message: 'Error interno del servidor al crear el post.' });
+    } catch (error) {
+        console.error('Error al actualizar post:', error);
+        res.status(500).json({ error: 'Error al actualizar el post.' });
+    }
+};
+
+// 5. DELETE /api/posts/:postId
+export const deletePost = async (req, res) => {
+    try {
+        const exito = await Post.delete(req.params.postId);
+        if (exito) {
+            res.status(204).send();
+        } else {
+            res.status(404).json({ error: 'Post no encontrado para eliminar.' });
+        }
+    } catch (error) {
+        console.error('Error al eliminar post:', error);
+        res.status(500).json({ error: 'Error al eliminar el post.' });
+    }
+};
+    
+// 6. RUTA ESPECIAL: Usa la lógica del modelo para buscar por autor.
+export const getPostsByAutor = async (req, res) => {
+    try {
+        // Usa req.params.autorId ya que la ruta se definirá como /api/autores/:autorId/posts en app.js
+        const posts = await Post.getByAutorId(req.params.autorId); 
+        res.json(posts);
+    } catch (error) {
+        console.error('Error al obtener posts por autor:', error);
+        res.status(500).json({ error: 'Error al obtener los posts del autor.' });
     }
 };

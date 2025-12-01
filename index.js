@@ -5,7 +5,7 @@ import pool from './src/config/db.js';
 import logger from './src/config/logger.js';
 
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
 // Server creation
 const server = http.createServer(app);

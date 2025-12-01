@@ -1,10 +1,14 @@
 import { Router } from 'express';
 import pool from '../config/db.js';
 
+import apiAutoresRouter from './autores.routes.js';
+import apiPostRouter from './post.routes.js';
+
 const router = Router();
 
 // Endpoint de estado
 router.get('/status', async (req, res) => {
+
 
     let dbStatus = 'UNKNOWN';
 
@@ -27,5 +31,8 @@ router.get('/status', async (req, res) => {
         uptime: process.uptime().toFixed(0) + 's',
     });
 });
+
+router.use('/autores', apiAutoresRouter);
+router.use('/posts', apiPostRouter);
 
 export default router;
