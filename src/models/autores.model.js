@@ -12,7 +12,7 @@ class Autor {
     // 2. OBTENER UN AUTOR POR ID (GET /api/autores/:autorId)
     static async getById(id) {
         const [rows] = await pool.query('SELECT * FROM autores WHERE id_autor = ?', [id]);
-        return rows[0]; // Retorna el autor
+        return rows[0];
     }
 
     // 3. CREAR UN NUEVO AUTOR (POST /api/autores)
