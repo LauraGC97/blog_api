@@ -39,12 +39,11 @@ class Post {
 
     // 4. CREAR UN NUEVO POST (POST /api/posts)
     static async create({ titulo, descripcion, fecha_creacion, categoria, fk_autor }) {
-        // El INSERT es correcto
         const [result] = await pool.query(
             'INSERT INTO post (titulo, descripcion, fecha_creacion, categoria, fk_autor) VALUES (?, ?, ?, ?, ?)',
             [titulo, descripcion, fecha_creacion, categoria, fk_autor]
         );
-        return this.getById(result.insertId); // Esto usa el SELECT corregido
+        return this.getById(result.insertId);
     }
     
     // 5. ACTUALIZAR UN POST (PUT /api/posts/:postId)
@@ -53,7 +52,7 @@ class Post {
             'UPDATE post SET titulo = ?, descripcion = ?, fecha_creacion = ?, categoria = ?, fk_autor = ? WHERE id_post = ?',
             [titulo, descripcion, fecha_creacion, categoria, fk_autor, id]
         );
-        return this.getById(id); // Esto usa el SELECT corregido
+        return this.getById(id);
     }
 
     // 6. ELIMINAR UN POST (DELETE /api/posts/:postId)

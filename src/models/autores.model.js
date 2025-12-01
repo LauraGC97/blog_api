@@ -21,7 +21,7 @@ class Autor {
             'INSERT INTO autores (nombre, email, imagen) VALUES (?, ?, ?)',
             [nombre, email, imagen]
         );
-        return this.getById(result.insertId); // Recupera el autor creado
+        return this.getById(result.insertId);
     }
 
     // 4. ACTUALIZAR UN AUTOR (PUT /api/autores/:autorId)
@@ -30,15 +30,15 @@ class Autor {
             'UPDATE autores SET nombre = ?, email = ?, imagen = ? WHERE id_autor = ?',
             [nombre, email, imagen, id]
         );
-        return this.getById(id); // Recupera el autor actualizado
+        return this.getById(id);
     }
 
     // 5. ELIMINAR UN AUTOR (DELETE /api/autores/:autorId)
     static async delete(id) {
         const [result] = await pool.query('DELETE FROM autores WHERE id_autor = ?', [id]);
-        return result.affectedRows > 0; // true si se eliminó una fila
+        return result.affectedRows > 0;
     }
 }
 
-// Exportación por defecto para mantener el estilo de "un módulo, una clase principal"
+
 export default Autor;

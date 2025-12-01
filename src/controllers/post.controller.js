@@ -36,13 +36,11 @@ export const postPost = async (req, res) => {
         const nuevoPost = await Post.create(req.body);
         res.status(201).json(nuevoPost);
     } catch (error) {
-        // *** CAMBIO TEMPORAL PARA DEPURACIÓN ***
-        // Esto mostrará el error exacto de MySQL
         console.error('Error detallado de MySQL:', error); 
         
         res.status(500).json({ 
             error: 'Error al crear el post.',
-            mysql_error_detail: error.sqlMessage || error.message // <-- Esto mostrará la razón real
+            mysql_error_detail: error.sqlMessage || error.message 
         });
     }
 };
@@ -77,10 +75,9 @@ export const deletePost = async (req, res) => {
     }
 };
     
-// 6. RUTA ESPECIAL: Usa la lógica del modelo para buscar por autor.
+// 6. RUTA ESPECIAL: buscar por autor.
 export const getPostsByAutor = async (req, res) => {
     try {
-        // Usa req.params.autorId ya que la ruta se definirá como /api/autores/:autorId/posts en app.js
         const posts = await Post.getByAutorId(req.params.autorId); 
         res.json(posts);
     } catch (error) {

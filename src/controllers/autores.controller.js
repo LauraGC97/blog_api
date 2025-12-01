@@ -62,7 +62,7 @@ export const deleteAutor = async (req, res) => {
     try {
         const exito = await Autor.delete(req.params.autorId);
         if (exito) {
-            res.status(204).send(); // 204 No Content
+            res.status(204).send();
         } else {
             res.status(404).json({ error: 'Autor no encontrado para eliminar.' });
         }
