@@ -1,4 +1,3 @@
-// src/config/logger.js
 
 // Función para obtener la marca de tiempo en formato ISO
 const getTimestamp = () => new Date().toISOString();

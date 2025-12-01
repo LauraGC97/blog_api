@@ -1,0 +1,37 @@
+@URL = http://localhost:3001/api
+
+### 1. GET: Obtener todos los posts
+GET {{URL}}/posts
+
+### 2. POST: Crear un nuevo post
+POST http://localhost:3001/api/posts
+Content-Type: application/json
+                                 
+{
+    "titulo": "Implementación de REST con MySQL2",
+    "descripcion": "Detalles técnicos sobre la creación de la API.",
+    "fecha_creacion": "2025-12-01",
+    "categoria": "Backend",
+    "fk_autor": 2 
+}
+
+### 3. GET: Obtener un post específico por ID
+GET {{URL}}/posts/5
+
+### 4. RUTA ESPECIAL: Obtener todos los posts de un autor específico
+GET http://localhost:3001/api/autores/1/posts
+
+### 5. PUT: Actualizar un post existente por ID
+PUT http://localhost:3001/api/posts/11
+Content-Type: application/json
+
+{
+    "titulo": "Implementación de REST con MySQL2 (Actualizado)",
+    "descripcion": "El post ha sido revisado y actualizado.",
+    "fecha_creacion": "2025-12-02",
+    "categoria": "Desarrollo Web",
+    "fk_autor": 2 
+}
+
+### 6. DELETE: Eliminar un post por ID
+DELETE http://localhost:3001/api/posts/11

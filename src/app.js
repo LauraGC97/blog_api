@@ -1,53 +1,34 @@
-// src/app.js
-
 import express from 'express';
 import cors from 'cors';
-import logger from './config/logger.js';
-
-// 1. Importamos las rutas específicas para la API del Blog
+// Asegúrate de importar el router principal
 import apiRoutes from './routes/api.routes.js';
+// Asumo que tienes un archivo logger
+import logger from './config/logger.js';
+import postsRouter from './routes/post.routes.js';
+import autoresRouter from './routes/autores.routes.js';
+import { getPostsByAutor } from './controllers/post.controller.js';
 
 const app = express();
 
 // --- 1. CONFIGURACIÓN DE MIDDLEWARE ---
 
-// Configuración CORS Avanzada
-app.use(cors({
-    origin: (origin, callback) => {
-        // Permite solicitudes sin 'origin' (como apps móviles o cURL)
-        callback(null, true);
-    },
-    credentials: true,
-    methods: ["GET", "HEAD", "PUT", "PATCH", "POST", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"]
-}));
+// Permite peticiones de otros orígenes
+app.use(cors());
 
 // Middleware para parsear el cuerpo de las solicitudes JSON
 app.use(express.json());
 
-// --- 2. MANEJO DE PREFLIGHT (OPTIONS) ---
 
-// Definimos una función simple para manejar las peticiones OPTIONS
-function handleOptions(req, res) {
-    res.setHeader('Access-Control-Allow-Origin', req.headers.origin || '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    res.setHeader('Access-Control-Max-Age', '86400'); // Cachea la respuesta OPTIONS por 24 horas
-    return res.status(200).end();
-}
+// --- 2. MONTAJE DE RUTAS ---
 
-// Aplicamos el handler de OPTIONS a las rutas principales de tu API
-app.options('/api/autores', handleOptions);
-app.options('/api/posts', handleOptions);
-app.options('/api', handleOptions);
+// Monta el router principal bajo el prefijo /api
+//app.use('/api', apiRoutes);
+app.use('/api/posts', postsRouter);
+app.use('/api/autores', autoresRouter);
+app.get('/api/autores/:autorId/posts', getPostsByAutor);
 
 
-// --- 3. MONTAJE DE RUTAS ---
-
-app.use('/api', apiRoutes);
-
-
-// --- 4. MANEJADORES DE ERRORES ---
+// --- 3. MANEJADORES DE ERRORES ---
 
 // 404 Handler (Rutas no definidas)
 app.use((req, res, next) => {
@@ -57,17 +38,13 @@ app.use((req, res, next) => {
     });
 });
 
-// Error Handler general (Captura cualquier error lanzado con next(err))
+// Error Handler general
 app.use((err, req, res, next) => {
-    // Solo mostramos el stack en desarrollo
-    if (process.env.NODE_ENV !== 'production') {
-        console.error(err.stack);
-    }
     logger.error('Error interno del servidor:', err.message);
     
-    // El estado 500 es genérico, podrías usar 400 para errores de validación, etc.
-    res.status(err.status || 500).json({ 
-        message: err.message || "Error interno del servidor"
+    res.status(500).json({ 
+        message: "Error interno del servidor",
+        error: err.message
     });
 });
 

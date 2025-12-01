@@ -1,0 +1,30 @@
+@URL = http://localhost:3001/api
+
+### 1. GET: Obtener todos los autores
+GET {{URL}}/autores
+
+### 2. POST: Crear un nuevo autor
+POST http://localhost:3001/api/autores  
+Content-Type: application/json
+
+{
+    "nombre": "Marta López",
+    "email": "marta.l@nuevo.com",
+    "imagen": "marta.jpg"
+}
+
+### 3. GET: Obtener un autor específico por ID
+GET {{URL}}/autores/12
+
+### 4. PUT: Actualizar un autor existente por ID
+PUT http://localhost:3001/api/autores/12
+Content-Type: application/json
+
+{
+    "nombre": "Marta Lopez",
+    "email": "mlopez@nuevo.com",
+    "imagen": "marta_v2.jpg"
+}
+
+### 5. DELETE: Eliminar un autor por ID
+DELETE {{URL}}/autores/11
